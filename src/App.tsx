@@ -202,37 +202,37 @@ export function App() {
 
             <div className="flex flex-col">
               <label htmlFor="startYear" className="mb-2 text-sm font-medium text-gray-300">Ano de Início</label>
-              <input id="startYear" type="number" value={startYear} onChange={(e) => setStartYear(e.target.valueAsNumber)} className="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" />
+              <input id="startYear" type="number" value={startYear} onChange={(e) => setStartYear(parseInt(e.target.value, 10) || new Date().getFullYear())} className="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" />
             </div>
 
             <div className="flex flex-col">
               <label htmlFor="avgMonthlyFee" className="mb-2 text-sm font-medium text-gray-300">Valor Médio - Mensalidade (R$)</label>
-              <input id="avgMonthlyFee" type="number" value={avgMonthlyFee} onChange={(e) => setAvgMonthlyFee(e.target.valueAsNumber)} className="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" />
+              <input id="avgMonthlyFee" type="number" value={avgMonthlyFee} onChange={(e) => setAvgMonthlyFee(Math.max(0, e.target.valueAsNumber || 0))} className="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" />
             </div>
 
             <div className="flex flex-col">
               <label htmlFor="avgImplementationFee" className="mb-2 text-sm font-medium text-gray-300">Valor Médio - Implantação (R$)</label>
-              <input id="avgImplementationFee" type="number" value={avgImplementationFee} onChange={(e) => setAvgImplementationFee(e.target.valueAsNumber)} className="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" />
+              <input id="avgImplementationFee" type="number" value={avgImplementationFee} onChange={(e) => setAvgImplementationFee(Math.max(0, e.target.valueAsNumber || 0))} className="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" />
             </div>
 
             <div className="flex flex-col">
               <label htmlFor="monthlyCommissionRate" className="mb-2 text-sm font-medium text-gray-300">Comissão Mensalidade (%)</label>
-              <input id="monthlyCommissionRate" type="number" value={monthlyCommissionRate} onChange={(e) => setMonthlyCommissionRate(e.target.valueAsNumber)} className="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" />
+              <input id="monthlyCommissionRate" type="number" value={monthlyCommissionRate} onChange={(e) => setMonthlyCommissionRate(Math.max(0, e.target.valueAsNumber || 0))} className="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" />
             </div>
 
             <div className="flex flex-col">
               <label htmlFor="implementationCommissionRate" className="mb-2 text-sm font-medium text-gray-300">Comissão Implantação (%)</label>
-              <input id="implementationCommissionRate" type="number" value={implementationCommissionRate} onChange={(e) => setImplementationCommissionRate(e.target.valueAsNumber)} className="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" />
+              <input id="implementationCommissionRate" type="number" value={implementationCommissionRate} onChange={(e) => setImplementationCommissionRate(Math.max(0, e.target.valueAsNumber || 0))} className="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" />
             </div>
 
             <div className="flex flex-col">
               <label htmlFor="taxRate" className="mb-2 text-sm font-medium text-gray-300">Impostos (%)</label>
-              <input id="taxRate" type="number" value={taxRate} onChange={(e) => setTaxRate(e.target.valueAsNumber)} className="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" />
+              <input id="taxRate" type="number" value={taxRate} onChange={(e) => setTaxRate(Math.max(0, e.target.valueAsNumber || 0))} className="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" />
             </div>
 
             <div className="flex flex-col">
               <label htmlFor="fixedEmployeeCost" className="mb-2 text-sm font-medium text-gray-300">Custo Fixo Vendedor (R$)</label>
-              <input id="fixedEmployeeCost" type="number" value={fixedEmployeeCost} onChange={(e) => setFixedEmployeeCost(e.target.valueAsNumber)} className="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" />
+              <input id="fixedEmployeeCost" type="number" value={fixedEmployeeCost} onChange={(e) => setFixedEmployeeCost(Math.max(0, e.target.valueAsNumber || 0))} className="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" />
             </div>
           </div>
         </section>
