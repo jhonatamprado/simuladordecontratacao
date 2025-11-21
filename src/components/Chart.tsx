@@ -1,6 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-
-declare const d3: any;
+import * as d3 from 'd3';
 
 interface ChartProps {
   data: { month: string; value: number }[];
