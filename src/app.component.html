@@ -1,0 +1,136 @@
+<div class="min-h-screen container mx-auto p-4 sm:p-6 lg:p-8">
+  <header class="text-center mb-8">
+    <h1 class="text-4xl font-bold text-white tracking-tight">Simulador de Contratação</h1>
+    <p class="text-purple-300 mt-2 text-lg">Analise o ROI de um novo vendedor ao longo de 12 meses.</p>
+  </header>
+
+  <main class="space-y-8">
+    <!-- Painel de Parâmetros -->
+    <section class="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700">
+      <h2 class="text-2xl font-semibold mb-6 text-white border-b border-gray-600 pb-3">Parâmetros Iniciais</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        
+        <div class="flex flex-col">
+          <label for="startMonth" class="mb-2 text-sm font-medium text-gray-300">Mês de Início</label>
+          <select id="startMonth" [ngModel]="startMonth()" (ngModelChange)="startMonth.set($event)" class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition">
+            @for (month of ALL_MONTHS; track month) {
+              <option [value]="month">{{ month }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="flex flex-col">
+          <label for="startYear" class="mb-2 text-sm font-medium text-gray-300">Ano de Início</label>
+          <input id="startYear" type="number" [ngModel]="startYear()" (ngModelChange)="startYear.set($event)" class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition">
+        </div>
+
+        <div class="flex flex-col">
+          <label for="avgMonthlyFee" class="mb-2 text-sm font-medium text-gray-300">Valor Médio - Mensalidade (R$)</label>
+          <input id="avgMonthlyFee" type="number" [ngModel]="avgMonthlyFee()" (ngModelChange)="avgMonthlyFee.set($event)" class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition">
+        </div>
+
+        <div class="flex flex-col">
+          <label for="avgImplementationFee" class="mb-2 text-sm font-medium text-gray-300">Valor Médio - Implantação (R$)</label>
+          <input id="avgImplementationFee" type="number" [ngModel]="avgImplementationFee()" (ngModelChange)="avgImplementationFee.set($event)" class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition">
+        </div>
+
+        <div class="flex flex-col">
+          <label for="monthlyCommissionRate" class="mb-2 text-sm font-medium text-gray-300">Comissão Mensalidade (%)</label>
+          <input id="monthlyCommissionRate" type="number" [ngModel]="monthlyCommissionRate()" (ngModelChange)="monthlyCommissionRate.set($event)" class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition">
+        </div>
+
+        <div class="flex flex-col">
+          <label for="implementationCommissionRate" class="mb-2 text-sm font-medium text-gray-300">Comissão Implantação (%)</label>
+          <input id="implementationCommissionRate" type="number" [ngModel]="implementationCommissionRate()" (ngModelChange)="implementationCommissionRate.set($event)" class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition">
+        </div>
+
+        <div class="flex flex-col">
+          <label for="taxRate" class="mb-2 text-sm font-medium text-gray-300">Impostos (%)</label>
+          <input id="taxRate" type="number" [ngModel]="taxRate()" (ngModelChange)="taxRate.set($event)" class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition">
+        </div>
+
+        <div class="flex flex-col">
+          <label for="fixedEmployeeCost" class="mb-2 text-sm font-medium text-gray-300">Custo Fixo Vendedor (R$)</label>
+          <input id="fixedEmployeeCost" type="number" [ngModel]="fixedEmployeeCost()" (ngModelChange)="fixedEmployeeCost.set($event)" class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition">
+        </div>
+      </div>
+    </section>
+
+    <!-- Resultados: Tabela e Gráfico -->
+    @let results = simulationResults();
+    <section class="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden">
+      <div class="p-6">
+        <h2 class="text-2xl font-semibold text-white">Resultados da Simulação</h2>
+        <p class="text-purple-300 mt-1">{{ getProfitabilityMonth() }}</p>
+      </div>
+      
+      <!-- Tabela de Resultados -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left text-gray-300">
+          <thead class="text-xs text-purple-200 uppercase bg-gray-700/50">
+            <tr>
+              <th scope="col" class="px-4 py-3 sticky left-0 bg-gray-700/80 backdrop-blur-sm">Mês/Ano</th>
+              <th scope="col" class="px-4 py-3 whitespace-nowrap">Vendas Mensal. (Qtd)</th>
+              <th scope="col" class="px-4 py-3 whitespace-nowrap">Vendas Impl. (Qtd)</th>
+              <th scope="col" class="px-4 py-3 whitespace-nowrap">Receita Bruta</th>
+              <th scope="col" class="px-4 py-3 whitespace-nowrap">Impostos</th>
+              <th scope="col" class="px-4 py-3 whitespace-nowrap">Remuneração Vendedor</th>
+              <th scope="col" class="px-4 py-3 whitespace-nowrap">Custos Totais</th>
+              <th scope="col" class="px-4 py-3 whitespace-nowrap">Resultado Mensal</th>
+              <th scope="col" class="px-4 py-3 whitespace-nowrap font-bold">Caixa Acumulado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of results.monthlyData; track item.monthYear) {
+            <tr class="border-b border-gray-700 hover:bg-gray-700/30 transition-colors duration-200">
+              <th scope="row" class="px-4 py-3 font-medium text-white sticky left-0 bg-gray-800/80 backdrop-blur-sm">{{ item.monthYear }}</th>
+              <td class="px-4 py-2">
+                <input type="number" [value]="item.newSubscriptions" (input)="onSalesChange(item.monthYear, 'subs', $event)" class="w-20 bg-gray-700 border border-gray-600 rounded-md px-2 py-1 text-white text-center focus:ring-1 focus:ring-purple-500 focus:border-purple-500">
+              </td>
+              <td class="px-4 py-2">
+                <input type="number" [value]="item.newImplementations" (input)="onSalesChange(item.monthYear, 'impls', $event)" class="w-20 bg-gray-700 border border-gray-600 rounded-md px-2 py-1 text-white text-center focus:ring-1 focus:ring-purple-500 focus:border-purple-500">
+              </td>
+              <td class="px-4 py-3">{{ formatCurrency(item.totalGrossRevenue) }}</td>
+              <td class="px-4 py-3">{{ formatCurrency(item.taxes) }}</td>
+              <td class="px-4 py-3">{{ formatCurrency(item.totalRemuneration) }}</td>
+              <td class="px-4 py-3">{{ formatCurrency(item.totalCosts) }}</td>
+              <td class="px-4 py-3" [class.text-green-400]="item.monthlyProfit >= 0" [class.text-red-400]="item.monthlyProfit < 0">{{ formatCurrency(item.monthlyProfit) }}</td>
+              <td class="px-4 py-3 font-bold" [class.text-green-400]="item.cumulativeProfit >= 0" [class.text-red-400]="item.cumulativeProfit < 0">{{ formatCurrency(item.cumulativeProfit) }}</td>
+            </tr>
+            }
+          </tbody>
+          <tfoot class="text-sm font-bold text-white bg-gray-700/50">
+            <tr>
+                <td class="px-4 py-3 sticky left-0 bg-gray-700/80 backdrop-blur-sm">TOTAL</td>
+                <td class="px-4 py-3 text-center">{{ results.totals.newSubscriptions }}</td>
+                <td class="px-4 py-3 text-center">{{ results.totals.newImplementations }}</td>
+                <td class="px-4 py-3">{{ formatCurrency(results.totals.totalGrossRevenue) }}</td>
+                <td class="px-4 py-3">{{ formatCurrency(results.totals.taxes) }}</td>
+                <td class="px-4 py-3">{{ formatCurrency(results.totals.totalRemuneration) }}</td>
+                <td class="px-4 py-3">{{ formatCurrency(results.totals.totalCosts) }}</td>
+                <td class="px-4 py-3" [class.text-green-400]="results.totals.finalProfit >= 0" [class.text-red-400]="results.totals.finalProfit < 0">{{ formatCurrency(results.totals.finalProfit) }}</td>
+                <td class="px-4 py-3" [class.text-green-400]="results.totals.finalProfit >= 0" [class.text-red-400]="results.totals.finalProfit < 0">{{ formatCurrency(results.totals.finalProfit) }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      
+      <!-- Gráficos -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6 border-t border-gray-700 mt-6">
+        <div>
+          <h3 class="text-xl font-semibold text-white mb-4">Evolução do Caixa Acumulado</h3>
+          <div class="h-96">
+              <app-chart [data]="chartData()"></app-chart>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-xl font-semibold text-white mb-4">Evolução do Resultado Mensal</h3>
+          <div class="h-96">
+              <app-chart [data]="monthlyProfitChartData()"></app-chart>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+</div>

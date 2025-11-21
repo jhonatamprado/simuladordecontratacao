@@ -1,0 +1,5 @@
+{
+  "name": "Simulador de Contratação",
+  "description": "Uma aplicação para simular o impacto financeiro da contratação de um novo funcionário, calculando o tempo necessário para que ele se torne lucrativo com base nas vendas e custos associados.",
+  "requestFramePermissions": []
+}
