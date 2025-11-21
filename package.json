@@ -1,28 +1,32 @@
 {
-  "name": "simulador-de-contratação",
-  "private": true,
+  "name": "simulador-de-contratacao",
   "version": "0.0.0",
-  "type": "module",
+  "private": true,
   "scripts": {
+    "start": "ng serve",
     "dev": "ng serve",
-    "build": "ng build",
-    "preview": "ng serve --configuration=production"
+    "build": "ng build --configuration production",
+    "preview": "ng serve --configuration production"
   },
   "dependencies": {
-    "rxjs": "^7.8.2",
-    "@angular/common": "^21.0.0",
-    "@angular/core": "^21.0.0",
-    "@angular/platform-browser": "^21.0.0",
-    "@angular/compiler": "^21.0.0",
-    "@angular/forms": "^21.0.0",
-    "@angular/build": "^21.0.0",
-    "@angular/cli": "^21.0.0",
-    "@angular/compiler-cli": "^21.0.0",
+    "@angular/animations": "^17.3.12",
+    "@angular/common": "^17.3.12",
+    "@angular/compiler": "^17.3.12",
+    "@angular/core": "^17.3.12",
+    "@angular/forms": "^17.3.12",
+    "@angular/platform-browser": "^17.3.12",
+    "@angular/platform-browser-dynamic": "^17.3.12",
+    "@angular/router": "^17.3.12",
+    "rxjs": "^7.8.1",
+    "tslib": "^2.6.2",
+    "zone.js": "~0.14.2",
     "tailwindcss": "latest"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
-    "typescript": "^5.9.4",
-    "vite": "^6.2.0"
+    "@angular-devkit/build-angular": "^17.3.12",
+    "@angular/cli": "^17.3.12",
+    "@angular/compiler-cli": "^17.3.12",
+    "@types/node": "^20.12.7",
+    "typescript": "5.4.5"
   }
 }
