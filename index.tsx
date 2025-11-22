@@ -174,11 +174,25 @@ $(document).ready(function () {
 
     const minCumulativeProfit = monthlyData.length > 0 ? Math.min(0, ...monthlyData.map(d => d.cumulativeProfit)) : 0;
     const investmentNeededMessage = ` E a empresa vai precisar ter de caixa neste período o valor de: ${formatCurrency(minCumulativeProfit)}`;
-
+    
+    let profitabilityMessage = "";
     if (firstPermanentProfitIndex !== -1) {
-      return `O funcionário se torna lucrativo de forma sustentável a partir de ${monthlyData[firstPermanentProfitIndex].monthYear}.${investmentNeededMessage}.`;
+      profitabilityMessage = `O funcionário se torna lucrativo de forma sustentável a partir de ${monthlyData[firstPermanentProfitIndex].monthYear}.${investmentNeededMessage}.`;
+    } else {
+      profitabilityMessage = `O funcionário não atinge o ponto de equilíbrio sustentável no período de 12 meses.${investmentNeededMessage}.`;
     }
-    return `O funcionário não atinge o ponto de equilíbrio sustentável no período de 12 meses.${investmentNeededMessage}.`;
+
+    const today = new Date();
+    const formattedDate = today.toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    const simulationDateMessage = `Data da Simulação: ${formattedDate}`;
+
+    return `${profitabilityMessage}<br>${simulationDateMessage}`;
   }
   
   const getCumulativeProfitChartData = () => calculateSimulation().monthlyData.map(d => ({ month: d.monthYear, value: d.cumulativeProfit }));
@@ -233,7 +247,7 @@ $(document).ready(function () {
     tableFooter.append(footerContent);
 
     // Update summary text
-    $('#profitability-month').text(getProfitabilityMonth(monthlyData));
+    $('#profitability-month').html(getProfitabilityMonth(monthlyData));
     
     // Update charts
     drawChart('#cumulative-profit-chart', getCumulativeProfitChartData());
@@ -287,20 +301,78 @@ $(document).ready(function () {
         }
     });
 
+    // Clear validation errors on input
+    $('#save-email').on('input', function() {
+        $(this).removeClass('border-red-500');
+        $('#email-error').addClass('hidden');
+    });
+
+    $('#save-celular').on('input', function() {
+        $(this).removeClass('border-red-500');
+        $('#celular-error').addClass('hidden');
+
+        // Phone number masking
+        const input = $(this);
+        let value = (input.val() as string).replace(/\D/g, '');
+        value = value.substring(0, 11); // (XX) 9XXXX-XXXX -> 11 digits
+
+        if (value.length > 7) {
+            value = value.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+        } else if (value.length > 2) {
+            value = value.replace(/^(\d{2})(\d{0,5}).*/, '($1) $2');
+        } else if (value.length > 0) {
+            value = value.replace(/^(\d*)/, '($1');
+        }
+        input.val(value);
+    });
+
     $saveForm.on('submit', async function(e) {
         e.preventDefault();
 
         const $submitBtn = $('#save-simulation-btn');
-        const originalBtnText = $submitBtn.text();
+        const $emailInput = $('#save-email');
+        const $celularInput = $('#save-celular');
+        const $emailError = $('#email-error');
+        const $celularError = $('#celular-error');
+
+        // Reset errors from previous attempts
+        $emailInput.removeClass('border-red-500');
+        $emailError.addClass('hidden');
+        $celularInput.removeClass('border-red-500');
+        $celularError.addClass('hidden');
+
+        const email = ($emailInput.val() as string).trim();
+        const celular = ($celularInput.val() as string).trim();
+        const celularDigits = celular.replace(/\D/g, '');
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        let isValid = true;
+
+        if (!email) {
+            $emailInput.addClass('border-red-500');
+            $emailError.text('O campo de e-mail é obrigatório.').removeClass('hidden');
+            isValid = false;
+        } else if (!emailRegex.test(email)) {
+            $emailInput.addClass('border-red-500');
+            $emailError.text('Por favor, insira um e-mail válido.').removeClass('hidden');
+            isValid = false;
+        }
         
-        const email = $('#save-email').val() as string;
-        const celular = $('#save-celular').val() as string;
-        if (!email || !celular) {
-            alert('Por favor, preencha todos os campos.');
-            return;
+        if (!celular) {
+            $celularInput.addClass('border-red-500');
+            $celularError.text('O campo de celular é obrigatório.').removeClass('hidden');
+            isValid = false;
+        } else if (celularDigits.length < 10) {
+            $celularInput.addClass('border-red-500');
+            $celularError.text('Número de celular inválido.').removeClass('hidden');
+            isValid = false;
         }
 
-        $submitBtn.text('Enviando e Gerando Imagem...').prop('disabled', true);
+        if (!isValid) {
+            return;
+        }
+        
+        const originalBtnText = $submitBtn.text();
+        $submitBtn.text('Salvando e baixando...').prop('disabled', true);
 
         try {
             // We can do image generation and form submission in parallel
@@ -337,10 +409,16 @@ $(document).ready(function () {
                 alert('Dados enviados com sucesso! O download da imagem da sua simulação começará em seguida.');
 
                 // Trigger direct download for the user
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const dateString = `${year}-${month}-${day}`;
+
                 const downloadUrl = URL.createObjectURL(imageBlob);
                 const a = document.createElement('a');
                 a.href = downloadUrl;
-                a.download = 'simulacao-contratacao.png';
+                a.download = `simulacao-contratacao-${dateString}.png`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
