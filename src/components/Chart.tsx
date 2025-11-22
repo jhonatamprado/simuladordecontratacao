@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
-import * as d3 from 'd3';
+
+declare const d3: any;
 
 interface ChartProps {
   data: { month: string; value: number }[];
@@ -36,8 +37,8 @@ export function Chart({ data }: ChartProps) {
         .range([0, width])
         .padding(0.1);
 
-      const yMin = d3.min(data, (d) => d.value) ?? 0;
-      const yMax = d3.max(data, (d) => d.value) ?? 0;
+      const yMin = d3.min(data, (d: any) => d.value) as number;
+      const yMax = d3.max(data, (d: any) => d.value) as number;
 
       const y = d3.scaleLinear()
         .domain([Math.min(0, yMin), Math.max(0, yMax)])
@@ -51,7 +52,7 @@ export function Chart({ data }: ChartProps) {
         .style('fill', '#9ca3af');
 
       svg.append('g')
-        .call(d3.axisLeft(y).tickFormat((d) => `${Number(d)/1000}k`))
+        .call(d3.axisLeft(y).tickFormat((d: any) => (d/1000) + 'k'))
         .selectAll('text')
         .style('fill', '#9ca3af');
 
@@ -81,11 +82,9 @@ export function Chart({ data }: ChartProps) {
         .attr('stroke-width', 1.5)
         .attr('stroke-dasharray', '4');
 
-      // FIX: Specify the data type for d3.line to match the data being passed.
-      // This resolves the error where the line generator expected a different data structure.
-      const line = d3.line<{ month: string; value: number }>()
-        .x((d) => (x(d.month) ?? 0) + x.bandwidth() / 2)
-        .y((d) => y(d.value))
+      const line = d3.line()
+        .x((d: any) => x(d.month) + x.bandwidth() / 2)
+        .y((d: any) => y(d.value))
         .curve(d3.curveMonotoneX);
 
       svg.append('path')
@@ -100,10 +99,10 @@ export function Chart({ data }: ChartProps) {
         .enter()
         .append('circle')
         .attr('class', 'dot')
-        .attr('cx', (d) => (x(d.month) ?? 0) + x.bandwidth() / 2)
-        .attr('cy', (d) => y(d.value))
+        .attr('cx', (d: any) => x(d.month) + x.bandwidth() / 2)
+        .attr('cy', (d: any) => y(d.value))
         .attr('r', 4)
-        .attr('fill', (d) => d.value >= 0 ? '#4ade80' : '#f87171')
+        .attr('fill', (d: any) => d.value >= 0 ? '#4ade80' : '#f87171')
         .attr('stroke', '#1f2937')
         .attr('stroke-width', 2);
     };
