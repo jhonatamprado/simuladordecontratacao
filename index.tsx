@@ -24,6 +24,22 @@ $(document).ready(function () {
   const formatCurrency = (value: number): string => {
     return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   };
+  
+  // --- TOOLTIP SETUP ---
+  function setupTooltip() {
+      d3.select('body').append('div')
+        .attr('id', 'chart-tooltip')
+        .style('position', 'absolute')
+        .style('opacity', 0)
+        .style('background', '#1f2937')
+        .style('border', '1px solid #4b5563')
+        .style('border-radius', '8px')
+        .style('padding', '8px 12px')
+        .style('color', 'white')
+        .style('font-size', '12px')
+        .style('pointer-events', 'none')
+        .style('transition', 'opacity 0.2s');
+  }
 
   // --- CHART RENDERING ---
   const chartInstances: { [key: string]: any } = {};
@@ -43,6 +59,7 @@ $(document).ready(function () {
     container.empty();
     if (!data || data.length === 0) return;
 
+    const tooltip = d3.select('#chart-tooltip');
     const element = container[0];
     const margin = { top: 20, right: 30, bottom: 40, left: 60 };
     const width = element.offsetWidth - margin.left - margin.right;
@@ -77,7 +94,30 @@ $(document).ready(function () {
 
     const line = d3.line().x((d: any) => x(d.month)! + x.bandwidth() / 2).y((d: any) => y(d.value)).curve(d3.curveMonotoneX);
     svg.append('path').datum(data).attr('fill', 'none').attr('stroke', '#4ade80').attr('stroke-width', 2.5).attr('d', line);
-    svg.selectAll('.dot').data(data).enter().append('circle').attr('class', 'dot').attr('cx', (d: any) => x(d.month)! + x.bandwidth() / 2).attr('cy', (d: any) => y(d.value)).attr('r', 4).attr('fill', (d: any) => d.value >= 0 ? '#4ade80' : '#f87171').attr('stroke', '#1f2937').attr('stroke-width', 2);
+    
+    svg.selectAll('.dot')
+       .data(data).enter()
+       .append('circle')
+       .attr('class', 'dot')
+       .attr('cx', (d: any) => x(d.month)! + x.bandwidth() / 2).attr('cy', (d: any) => y(d.value))
+       .attr('r', 5)
+       .attr('fill', (d: any) => d.value >= 0 ? '#4ade80' : '#f87171')
+       .attr('stroke', '#1f2937')
+       .attr('stroke-width', 2)
+       .style('cursor', 'pointer')
+       .on('mouseover', function(event: MouseEvent, d: any) {
+            tooltip.transition().duration(200).style('opacity', .9);
+            tooltip.html(`<strong>${d.month}</strong><br/>${formatCurrency(d.value)}`)
+                .style('left', (event.pageX + 15) + 'px')
+                .style('top', (event.pageY - 28) + 'px');
+        })
+       .on('mousemove', function(event: MouseEvent) {
+            tooltip.style('left', (event.pageX + 15) + 'px')
+                   .style('top', (event.pageY - 28) + 'px');
+        })
+       .on('mouseout', function() {
+            tooltip.transition().duration(500).style('opacity', 0);
+        });
   }
 
   // --- SIMULATION LOGIC ---
@@ -130,10 +170,14 @@ $(document).ready(function () {
       const subsequentMonths = monthlyData.slice(index + 1);
       return !subsequentMonths.some(subsequentMonth => subsequentMonth.cumulativeProfit < 0);
     });
+
+    const minCumulativeProfit = monthlyData.length > 0 ? Math.min(0, ...monthlyData.map(d => d.cumulativeProfit)) : 0;
+    const investmentNeededMessage = ` E a empresa vai precisar ter de caixa neste período o valor de: ${formatCurrency(minCumulativeProfit)}`;
+
     if (firstPermanentProfitIndex !== -1) {
-      return `O funcionário se torna lucrativo de forma sustentável a partir de ${monthlyData[firstPermanentProfitIndex].monthYear}.`;
+      return `O funcionário se torna lucrativo de forma sustentável a partir de ${monthlyData[firstPermanentProfitIndex].monthYear}.${investmentNeededMessage}.`;
     }
-    return 'O funcionário não atinge o ponto de equilíbrio sustentável no período de 12 meses.';
+    return `O funcionário não atinge o ponto de equilíbrio sustentável no período de 12 meses.${investmentNeededMessage}.`;
   }
   
   const getCumulativeProfitChartData = () => calculateSimulation().monthlyData.map(d => ({ month: d.monthYear, value: d.cumulativeProfit }));
@@ -261,6 +305,16 @@ $(document).ready(function () {
   }
 
   function init() {
+    setupTooltip();
+
+    // Set initial month and year to current date
+    const now = new Date();
+    const currentMonth = ALL_MONTHS[now.getMonth()];
+    const currentYear = now.getFullYear();
+    $('#startMonth').val(currentMonth);
+    $('#startYear').val(currentYear);
+    
+    // Continue with the rest of the initialization
     updateStateFromInputs();
     generateSalesPlan();
     setupEventListeners();
