@@ -2,6 +2,7 @@
 // we declare the global variables that are loaded from CDNs in index.html.
 declare const d3: any;
 declare const $: any;
+declare const html2canvas: any;
 
 $(document).ready(function () {
   // --- CONSTANTS ---
@@ -265,6 +266,98 @@ $(document).ready(function () {
             }
         }
         render();
+    });
+
+    // --- Modal Logic ---
+    const $modal = $('#save-modal');
+    const $saveForm = $('#save-form');
+
+    $('#show-save-modal-btn').on('click', function() {
+        $modal.removeClass('hidden');
+    });
+
+    $('#close-modal-btn').on('click', function() {
+        $modal.addClass('hidden');
+    });
+
+    // Also close if clicking the backdrop
+    $modal.on('click', function(e) {
+        if (e.target === this) {
+            $modal.addClass('hidden');
+        }
+    });
+
+    $saveForm.on('submit', async function(e) {
+        e.preventDefault();
+
+        const $submitBtn = $('#save-simulation-btn');
+        const originalBtnText = $submitBtn.text();
+        
+        const email = $('#save-email').val() as string;
+        const celular = $('#save-celular').val() as string;
+        if (!email || !celular) {
+            alert('Por favor, preencha todos os campos.');
+            return;
+        }
+
+        $submitBtn.text('Enviando e Gerando Imagem...').prop('disabled', true);
+
+        try {
+            // We can do image generation and form submission in parallel
+            const imagePromise = (async () => {
+                const resultsSection = document.querySelector("#results-section") as HTMLElement;
+                const canvas = await html2canvas(resultsSection, {
+                    scale: 2,
+                    backgroundColor: '#111827',
+                    useCORS: true
+                });
+                const imageBlob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'));
+                if (!imageBlob) {
+                    throw new Error('Falha ao gerar a imagem.');
+                }
+                return imageBlob;
+            })();
+
+            const emailPromise = (async () => {
+                const formData = new FormData(this as HTMLFormElement);
+                formData.append('subject', `Nova Simulação de Contratação de: ${email}`);
+                formData.append('cc', email); // Send a copy to the user
+                
+                const response = await fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+                return response.json();
+            })();
+
+            const [imageBlob, result] = await Promise.all([imagePromise, emailPromise]);
+
+            if (result.success) {
+                $modal.addClass('hidden');
+                alert('Dados enviados com sucesso! O download da imagem da sua simulação começará em seguida.');
+
+                // Trigger direct download for the user
+                const downloadUrl = URL.createObjectURL(imageBlob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = 'simulacao-contratacao.png';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(downloadUrl);
+            } else {
+                console.error('Error sending email:', result);
+                const errorMessage = (result && typeof result.message === 'string') 
+                    ? result.message 
+                    : 'A resposta do servidor não foi compreendida. Verifique o console para detalhes técnicos.';
+                alert(`Ocorreu um erro ao enviar o email: ${errorMessage}`);
+            }
+        } catch (error) {
+            console.error('Network or image generation error:', error);
+            alert('Ocorreu um erro ao gerar a imagem ou enviar o email. Verifique o console para mais detalhes.');
+        } finally {
+            $submitBtn.text(originalBtnText).prop('disabled', false);
+        }
     });
   }
 

@@ -9,6 +9,48 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<style>
+  @media print {
+    body {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      background-color: #111827 !important;
+    }
+    header, 
+    section.bg-gray-800:first-of-type, /* Parameters panel */
+    #save-button-container, 
+    #save-modal {
+      display: none !important;
+    }
+    main > #results-section {
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    .container {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+    }
+    /* Ensure text is visible */
+    * {
+      color: #f3f4f6 !important;
+    }
+    tr {
+        border-color: #4b5563 !important;
+    }
+    thead {
+        background-color: #374151 !important;
+    }
+    .sticky {
+        position: static !important; /* remove stickiness */
+    }
+    .dot {
+        stroke: #111827 !important;
+    }
+  }
+</style>
 <script type="importmap">
 {
   "imports": {
@@ -93,7 +135,7 @@
       </section>
 
       <!-- Resultados: Tabela e Gráfico -->
-      <section class="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden">
+      <section id="results-section" class="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden">
         <div class="p-6">
           <h2 class="text-2xl font-semibold text-white">Resultados da Simulação</h2>
           <p id="profitability-month" class="text-purple-300 mt-1"></p>
@@ -139,9 +181,48 @@
           </div>
         </div>
       </section>
+
+      <!-- Botão Salvar -->
+      <section id="save-button-container" class="mt-8 text-center">
+        <button id="show-save-modal-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+          Salvar Simulação
+        </button>
+      </section>
     </main>
   </div>
 
+  <!-- Modal de Salvamento -->
+  <div id="save-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+    <div class="bg-gray-800 rounded-2xl shadow-2xl p-8 w-full max-w-md relative border border-gray-700">
+      <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">&times;</button>
+      <h2 class="text-2xl font-semibold mb-6 text-white text-center">Salvar e Enviar Simulação</h2>
+      <form id="save-form">
+        <!-- 
+          IMPORTANTE: O formulário abaixo usa um serviço de terceiros (Web3Forms) para enviar e-mails.
+          Para que funcione, você deve:
+          1. Criar uma conta gratuita em https://web3forms.com/
+          2. Criar uma chave de acesso (access_key) e configurar o email de destino para jhonyps@gmail.com
+          3. Substituir 'YOUR_ACCESS_KEY_HERE' abaixo pela sua chave real.
+        -->
+        <input type="hidden" name="access_key" value="5ad4d456-492a-4589-97dc-99a02dea9496">
+        <input type="hidden" name="from_name" value="Simulador de Contratação">
+
+        <div class="mb-4">
+          <label for="save-email" class="block mb-2 text-sm font-medium text-gray-300">Email</label>
+          <input type="email" id="save-email" name="email" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" placeholder="seuemail@exemplo.com" required>
+        </div>
+        <div class="mb-6">
+          <label for="save-celular" class="block mb-2 text-sm font-medium text-gray-300">Celular</label>
+          <input type="tel" id="save-celular" name="celular" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" placeholder="(XX) XXXXX-XXXX" required>
+        </div>
+        <button type="submit" id="save-simulation-btn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 disabled:bg-purple-400 disabled:cursor-not-allowed">
+          Salvar e Enviar
+        </button>
+      </form>
+    </div>
+  </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script type="module" src="/index.tsx"></script>
 </body>
 </html>
