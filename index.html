@@ -8,28 +8,126 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://d3js.org/d3.v7.min.js"></script>
-<script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@18.2.0",
-    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-    "react/jsx-runtime": "https://esm.sh/react@18.2.0/jsx-runtime",
-    "rxjs": "https://aistudiocdn.com/rxjs@^7.8.2?conditions=es2015",
-    "rxjs/operators": "https://aistudiocdn.com/rxjs@^7.8.2/operators?conditions=es2015",
-    "rxjs/ajax": "https://aistudiocdn.com/rxjs@^7.8.2/ajax?conditions=es2015",
-    "rxjs/webSocket": "https://aistudiocdn.com/rxjs@^7.8.2/webSocket?conditions=es2015",
-    "rxjs/testing": "https://aistudiocdn.com/rxjs@^7.8.2/testing?conditions=es2015",
-    "rxjs/fetch": "https://aistudiocdn.com/rxjs@^7.8.2/fetch?conditions=es2015",
-    "path": "https://next.esm.sh/path@^0.12.7?external=rxjs",
-    "vite": "https://next.esm.sh/vite@^7.2.4?external=rxjs",
-    "@vitejs/plugin-react": "https://next.esm.sh/@vitejs/plugin-react@^5.1.1?external=rxjs"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head> 
 <body class="bg-gray-900 text-gray-100 font-sans antialiased">
-  <div id="app-root"></div>
+
+  <div class="min-h-screen container mx-auto p-4 sm:p-6 lg:p-8">
+    <header class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-white tracking-tight">Simulador de Contratação</h1>
+      <p class="text-purple-300 mt-2 text-lg">Analise o ROI de um novo vendedor ao longo de 12 meses.</p>
+    </header>
+
+    <main class="space-y-8">
+      <!-- Painel de Parâmetros -->
+      <section class="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700">
+        <h2 class="text-2xl font-semibold mb-6 text-white border-b border-gray-600 pb-3">Parâmetros Iniciais</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+          
+          <div class="flex flex-col">
+            <label for="startMonth" class="mb-2 text-sm font-medium text-gray-300">Mês de Início</label>
+            <select id="startMonth" class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition">
+              <option value="JAN">JAN</option>
+              <option value="FEV">FEV</option>
+              <option value="MAR">MAR</option>
+              <option value="ABR">ABR</option>
+              <option value="MAI">MAI</option>
+              <option value="JUN">JUN</option>
+              <option selected value="JUL">JUL</option>
+              <option value="AGO">AGO</option>
+              <option value="SET">SET</option>
+              <option value="OUT">OUT</option>
+              <option value="NOV">NOV</option>
+              <option value="DEZ">DEZ</option>
+            </select>
+          </div>
+
+          <div class="flex flex-col">
+            <label for="startYear" class="mb-2 text-sm font-medium text-gray-300">Ano de Início</label>
+            <input id="startYear" type="number" value="2024" class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" />
+          </div>
+
+          <div class="flex flex-col">
+            <label for="avgMonthlyFee" class="mb-2 text-sm font-medium text-gray-300">Valor Médio - Mensalidade (R$)</label>
+            <input id="avgMonthlyFee" type="number" value="335" class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" />
+          </div>
+
+          <div class="flex flex-col">
+            <label for="avgImplementationFee" class="mb-2 text-sm font-medium text-gray-300">Valor Médio - Implantação (R$)</label>
+            <input id="avgImplementationFee" type="number" value="1000" class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" />
+          </div>
+
+          <div class="flex flex-col">
+            <label for="monthlyCommissionRate" class="mb-2 text-sm font-medium text-gray-300">Comissão Mensalidade (%)</label>
+            <input id="monthlyCommissionRate" type="number" value="5" class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" />
+          </div>
+
+          <div class="flex flex-col">
+            <label for="implementationCommissionRate" class="mb-2 text-sm font-medium text-gray-300">Comissão Implantação (%)</label>
+            <input id="implementationCommissionRate" type="number" value="10" class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" />
+          </div>
+
+          <div class="flex flex-col">
+            <label for="taxRate" class="mb-2 text-sm font-medium text-gray-300">Impostos (%)</label>
+            <input id="taxRate" type="number" value="6" class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" />
+          </div>
+
+          <div class="flex flex-col">
+            <label for="fixedEmployeeCost" class="mb-2 text-sm font-medium text-gray-300">Custo Fixo Vendedor (R$)</label>
+            <input id="fixedEmployeeCost" type="number" value="2000" class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Resultados: Tabela e Gráfico -->
+      <section class="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden">
+        <div class="p-6">
+          <h2 class="text-2xl font-semibold text-white">Resultados da Simulação</h2>
+          <p id="profitability-month" class="text-purple-300 mt-1"></p>
+        </div>
+        
+        <!-- Tabela de Resultados -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left text-gray-300">
+            <thead class="text-xs text-purple-200 uppercase bg-gray-700/50">
+              <tr>
+                <th scope="col" class="px-4 py-3 sticky left-0 bg-gray-700/80 backdrop-blur-sm">Mês/Ano</th>
+                <th scope="col" class="px-4 py-3 whitespace-nowrap">Vendas Mensal. (Qtd)</th>
+                <th scope="col" class="px-4 py-3 whitespace-nowrap">Vendas Impl. (Qtd)</th>
+                <th scope="col" class="px-4 py-3 whitespace-nowrap">Receita Bruta</th>
+                <th scope="col" class="px-4 py-3 whitespace-nowrap">Impostos</th>
+                <th scope="col" class="px-4 py-3 whitespace-nowrap">Remuneração Vendedor</th>
+                <th scope="col" class="px-4 py-3 whitespace-nowrap">Custos Totais</th>
+                <th scope="col" class="px-4 py-3 whitespace-nowrap">Resultado Mensal</th>
+                <th scope="col" class="px-4 py-3 whitespace-nowrap font-bold">Caixa Acumulado</th>
+              </tr>
+            </thead>
+            <tbody id="results-table-body">
+              <!-- Rows will be injected by JavaScript -->
+            </tbody>
+            <tfoot class="text-sm font-bold text-white bg-gray-700/50">
+              <tr id="results-table-footer">
+                <!-- Footer will be injected by JavaScript -->
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        
+        <!-- Gráficos -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6 border-t border-gray-700 mt-6">
+          <div>
+            <h3 class="text-xl font-semibold text-white mb-4">Evolução do Caixa Acumulado</h3>
+            <div id="cumulative-profit-chart" class="h-96"></div>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold text-white mb-4">Evolução do Resultado Mensal</h3>
+            <div id="monthly-profit-chart" class="h-96"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
 <script type="module" src="/index.tsx"></script>
 </body>
 </html>
