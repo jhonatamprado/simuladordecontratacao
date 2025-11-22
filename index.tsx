@@ -110,6 +110,7 @@ $(document).ready(function () {
     const totals = {
         newSubscriptions: monthlyData.reduce((sum, d) => sum + d.newSubscriptions, 0),
         newImplementations: monthlyData.reduce((sum, d) => sum + d.newImplementations, 0),
+        recurringRevenue: monthlyData.reduce((sum, d) => sum + d.recurringRevenue, 0),
         totalGrossRevenue: monthlyData.reduce((sum, d) => sum + d.totalGrossRevenue, 0),
         taxes: monthlyData.reduce((sum, d) => sum + d.taxes, 0),
         netRevenue: monthlyData.reduce((sum, d) => sum + d.netRevenue, 0),
@@ -158,6 +159,7 @@ $(document).ready(function () {
           <td class="px-4 py-2">
             <input type="number" data-monthyear="${item.monthYear}" data-type="impls" value="${item.newImplementations}" class="w-20 bg-gray-700 border border-gray-600 rounded-md px-2 py-1 text-white text-center focus:ring-1 focus:ring-purple-500 focus:border-purple-500 sales-input" />
           </td>
+          <td class="px-4 py-3">${formatCurrency(item.recurringRevenue)}</td>
           <td class="px-4 py-3">${formatCurrency(item.totalGrossRevenue)}</td>
           <td class="px-4 py-3">${formatCurrency(item.taxes)}</td>
           <td class="px-4 py-3">${formatCurrency(item.totalRemuneration)}</td>
@@ -175,6 +177,7 @@ $(document).ready(function () {
         <td class="px-4 py-3 sticky left-0 bg-gray-700/80 backdrop-blur-sm">TOTAL</td>
         <td class="px-4 py-3 text-center">${totals.newSubscriptions}</td>
         <td class="px-4 py-3 text-center">${totals.newImplementations}</td>
+        <td class="px-4 py-3">${formatCurrency(totals.recurringRevenue)}</td>
         <td class="px-4 py-3">${formatCurrency(totals.totalGrossRevenue)}</td>
         <td class="px-4 py-3">${formatCurrency(totals.taxes)}</td>
         <td class="px-4 py-3">${formatCurrency(totals.totalRemuneration)}</td>
